@@ -400,7 +400,9 @@ static void show_free_areas(unsigned int filter, nodemask_t *nodemask, int max_z
 
 void __show_mem(unsigned int filter, nodemask_t *nodemask, int max_zone_idx)
 {
+#ifdef CONFIG_MEM_ALLOC_PROFILING
 	static DEFINE_SPINLOCK(mem_alloc_profiling_spinlock);
+#endif
 	unsigned long total = 0, reserved = 0, highmem = 0;
 	struct zone *zone;
 
