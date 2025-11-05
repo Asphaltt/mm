@@ -2042,6 +2042,10 @@ struct cftype mem_cgroup_legacy_files[] = {
 		.seq_show = memory_stat_show,
 	},
 	{
+		.name = "stat_refresh",
+		.write = memory_stat_refresh_write,
+	},
+	{
 		.name = "force_empty",
 		.write = mem_cgroup_force_empty_write,
 	},

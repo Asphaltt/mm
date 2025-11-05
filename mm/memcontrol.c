@@ -610,6 +610,15 @@ static void __mem_cgroup_flush_stats(struct mem_cgroup *memcg, bool force)
 	css_rstat_flush(&memcg->css);
 }
 
+static void memcg_flush_stats(struct mem_cgroup *memcg, bool force)
+{
+	if (mem_cgroup_disabled())
+		return;
+
+	memcg = memcg ?: root_mem_cgroup;
+	__mem_cgroup_flush_stats(memcg, force);
+}
+
 /*
  * mem_cgroup_flush_stats - flush the stats of a memory cgroup subtree
  * @memcg: root of the subtree to flush
@@ -621,13 +630,7 @@ static void __mem_cgroup_flush_stats(struct mem_cgroup *memcg, bool force)
  */
 void mem_cgroup_flush_stats(struct mem_cgroup *memcg)
 {
-	if (mem_cgroup_disabled())
-		return;
-
-	if (!memcg)
-		memcg = root_mem_cgroup;
-
-	__mem_cgroup_flush_stats(memcg, false);
+	memcg_flush_stats(memcg, false);
 }
 
 void mem_cgroup_flush_stats_ratelimited(struct mem_cgroup *memcg)
@@ -4530,6 +4533,12 @@ int memory_stat_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+ssize_t memory_stat_refresh_write(struct kernfs_open_file *of, char *buf, size_t nbytes, loff_t off)
+{
+	memcg_flush_stats(mem_cgroup_from_css(of_css(of)), true);
+	return nbytes;
+}
+
 #ifdef CONFIG_NUMA
 static inline unsigned long lruvec_page_state_output(struct lruvec *lruvec,
 						     int item)
@@ -4665,6 +4674,10 @@ static struct cftype memory_files[] = {
 	{
 		.name = "stat",
 		.seq_show = memory_stat_show,
+	},
+	{
+		.name = "stat_refresh",
+		.write = memory_stat_refresh_write,
 	},
 #ifdef CONFIG_NUMA
 	{
