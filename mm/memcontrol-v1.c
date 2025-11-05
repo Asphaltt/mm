@@ -2040,6 +2040,7 @@ struct cftype mem_cgroup_legacy_files[] = {
 	{
 		.name = "stat",
 		.seq_show = memory_stat_show,
+		.write_u64 = memory_stat_write,
 	},
 	{
 		.name = "force_empty",
@@ -2078,6 +2079,7 @@ struct cftype mem_cgroup_legacy_files[] = {
 	{
 		.name = "numa_stat",
 		.seq_show = memcg_numa_stat_show,
+		.write_u64 = memory_stat_write,
 	},
 #endif
 	{

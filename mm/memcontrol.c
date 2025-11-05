@@ -4531,6 +4531,17 @@ int memory_stat_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+int memory_stat_write(struct cgroup_subsys_state *css, struct cftype *cft, u64 val)
+{
+	if (val != 1)
+		return -EINVAL;
+
+	if (css)
+		css_rstat_flush(css);
+
+	return 0;
+}
+
 #ifdef CONFIG_NUMA
 static inline unsigned long lruvec_page_state_output(struct lruvec *lruvec,
 						     int item)
@@ -4666,11 +4677,13 @@ static struct cftype memory_files[] = {
 	{
 		.name = "stat",
 		.seq_show = memory_stat_show,
+		.write_u64 = memory_stat_write,
 	},
 #ifdef CONFIG_NUMA
 	{
 		.name = "numa_stat",
 		.seq_show = memory_numa_stat_show,
+		.write_u64 = memory_stat_write,
 	},
 #endif
 	{

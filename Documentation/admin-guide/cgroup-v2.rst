@@ -1337,7 +1337,7 @@ PAGE_SIZE multiple when read back.
 	cgroup is within its effective low boundary, the cgroup's
 	memory won't be reclaimed unless there is no reclaimable
 	memory available in unprotected cgroups.
-	Above the effective low	boundary (or 
+	Above the effective low	boundary (or
 	effective min boundary if it is higher), pages are reclaimed
 	proportionally to the overage, reducing reclaim pressure for
 	smaller overages.
@@ -1525,11 +1525,17 @@ The following nested keys are defined.
 	generated on this file reflects only the local events.
 
   memory.stat
-	A read-only flat-keyed file which exists on non-root cgroups.
+	A read-write flat-keyed file which exists on non-root cgroups.
 
-	This breaks down the cgroup's memory footprint into different
-	types of memory, type-specific details, and other information
-	on the state and past events of the memory management system.
+	Reading this file breaks down the cgroup's memory footprint into
+	different types of memory, type-specific details, and other
+	information on the state and past events of the memory management
+	system.
+
+	Writing the value "1" to this file forces an immediate flush of
+	memory statistics for this cgroup and its descendants, improving
+	the accuracy of subsequent reads. Any other value will result in
+	an error.
 
 	All memory amounts are in bytes.
 
@@ -1786,11 +1792,16 @@ The following nested keys are defined.
 		cgroup is mounted with the memory_hugetlb_accounting option).
 
   memory.numa_stat
-	A read-only nested-keyed file which exists on non-root cgroups.
+	A read-write nested-keyed file which exists on non-root cgroups.
 
-	This breaks down the cgroup's memory footprint into different
-	types of memory, type-specific details, and other information
-	per node on the state of the memory management system.
+	Reading this file breaks down the cgroup's memory footprint into
+	different types of memory, type-specific details, and other
+	information per node on the state of the memory management system.
+
+	Writing the value "1" to this file forces an immediate flush of
+	memory statistics for this cgroup and its descendants, improving
+	the accuracy of subsequent reads. Any other value will result in
+	an error.
 
 	This is useful for providing visibility into the NUMA locality
 	information within an memcg since the pages are allowed to be
@@ -2173,7 +2184,7 @@ of the two is enforced.
 
 cgroup writeback requires explicit support from the underlying
 filesystem.  Currently, cgroup writeback is implemented on ext2, ext4,
-btrfs, f2fs, and xfs.  On other filesystems, all writeback IOs are 
+btrfs, f2fs, and xfs.  On other filesystems, all writeback IOs are
 attributed to the root cgroup.
 
 There are inherent differences in memory and writeback management
